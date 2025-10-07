@@ -63,7 +63,7 @@ if (form) {
     }
 
     // Has gclid/gbraid -> send to MyBookie and carry ids
-    const base = 'https://link.everygame.eu/c/422754';
+    const base = 'https://zuporo.com/offer/';
     return carryParams(base, ['gclid', 'gbraid']);
   }
 
@@ -128,6 +128,7 @@ if (form) {
     }
   });
 })();
+
 
 
 
