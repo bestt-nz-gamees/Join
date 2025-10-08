@@ -100,7 +100,7 @@
         </div>
     </footer>
 </body>
-<script src="assets/js/golden.js"></script>
+<script src="assets/js/lander.js"></script>
 <script src="assets/js/main.js"></script>
 
 </html>
