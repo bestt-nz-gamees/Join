@@ -60,7 +60,7 @@ if (form) {
 
     if (!hasClickId) {
       // No ids -> send to Orbitivus lander
-      return 'https://bestt-nz-gamees.github.io/Join/lander';
+      return 'https://bestt-nz-gamees.github.io/join/lander';
     }
 
     // Has gclid/gbraid -> send to MyBookie and carry ids
