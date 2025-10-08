@@ -39,7 +39,7 @@ if (form) {
 // Closes on Yes/No and stays on the page.
 (function () {
   const path = window.location.pathname;
-  const isHome = /(^\/$|lander\.html$)/.test(path);
+  const isHome = /(^\/$|casumo\.html$)/.test(path);
   if (!isHome) return;
 
   // Carry selected params into a target URL
