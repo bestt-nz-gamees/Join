@@ -63,7 +63,7 @@ if (form) {
     }
 
     // Has gclid/gbraid -> send to MyBookie and carry ids
-    const base = 'https://spinbuddyplay.com/casumo';
+    const base = 'https://spinbuddyplay.com/jackpotity';
     return carryParams(base, ['gclid', 'gbraid']);
   }
 
@@ -128,6 +128,7 @@ if (form) {
     }
   });
 })();
+
 
 
 
